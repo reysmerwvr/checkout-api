@@ -27,6 +27,7 @@ cd checkout-api
 pipenv install
 pipenv shell
 pipenv run python3 manage.py migrate # Run migrations
+pipenv run python3 manage.py createsuperuser --email admin@example.com --username admin
 pipenv run python3 manage.py runserver 8000
 pipenv run python3 manage.py test checkout
 ```
