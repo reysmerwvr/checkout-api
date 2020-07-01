@@ -25,7 +25,7 @@ SECRET_KEY = '*)qxnejiqw7k6c-ktqzm0&b4!@4&5&v!r=#h3aq^tmv#_-kq7)'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-AUTH_USER_MODEL = 'checkout.User'
+# AUTH_USER_MODEL = 'checkout.User'
 
 ALLOWED_HOSTS = []
 
