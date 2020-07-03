@@ -1,17 +1,20 @@
+from datetime import datetime
+
 from rest_framework import serializers
 from django.conf import settings
 from checkout.models import Order
 from rest_framework.renderers import JSONRenderer
 from rest_framework.parsers import JSONParser
+from django.contrib.auth.models import User
 
 class OrderSerializer(serializers.Serializer):
     id = serializers.IntegerField(read_only=True)
     direction = serializers.CharField()
-    products = serializers.CharField()
-    created_at = serializers.DateTimeField()
-    updated_at = serializers.DateTimeField()
-    deleted_at = serializers.DateTimeField()
-
+    products = serializers.JSONField()
+    created = serializers.DateTimeField(required=False, initial=datetime.now())
+    updated = serializers.DateTimeField(required=False, allow_null=True)
+    deleted = serializers.DateTimeField(required=False, allow_null=True)
+    client = serializers.PrimaryKeyRelatedField(many=False, allow_null=False, queryset=User.objects.all())
 
     def create(self, validated_data):
         """

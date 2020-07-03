@@ -16,7 +16,7 @@ class Order(models.Model):
 	direction = models.TextField()
 	products = models.TextField()
 	created = models.DateTimeField(auto_now_add=True)
-	updated = models.DateTimeField(auto_now_add=True)
+	updated = models.DateTimeField(auto_now_add=False, null=True)
 	deleted = models.DateTimeField(auto_now_add=False, null=True)
 
 	def __str__(self):

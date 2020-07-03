@@ -1,11 +1,11 @@
 from django.http import HttpResponse, JsonResponse
-from django.views.decorators.csrf import csrf_exempt
+from rest_framework.decorators import api_view
 from rest_framework.parsers import JSONParser
 from checkout.models import Order
 from checkout.serializers import OrderSerializer
 
-@csrf_exempt
-def order_list(request):
+@api_view(['GET', 'POST'])
+def order_list(request, format=None):
     """
     List all code orders, or create a new Order.
     """
@@ -13,7 +13,6 @@ def order_list(request):
         orders = Order.objects.all()
         serializer = OrderSerializer(orders, many=True)
         return JsonResponse(serializer.data, safe=False)
-
     elif request.method == 'POST':
         data = JSONParser().parse(request)
         serializer = OrderSerializer(data=data)
@@ -22,8 +21,8 @@ def order_list(request):
             return JsonResponse(serializer.data, status=201)
         return JsonResponse(serializer.errors, status=400)
 
-@csrf_exempt
-def order_detail(request, pk):
+@api_view(['GET', 'PUT', 'DELETE'])
+def order_detail(request, pk, format=None):
     """
     Retrieve, update or delete a code order.
     """
