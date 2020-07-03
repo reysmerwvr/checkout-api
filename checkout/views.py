@@ -9,8 +9,8 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from rest_framework import status
-from rest_framework import generics
 from rest_framework import permissions
+from rest_framework import viewsets
 
 
 class OrderList(APIView):
@@ -19,7 +19,7 @@ class OrderList(APIView):
     """
 
     permission_classes = [permissions.IsAuthenticatedOrReadOnly,
-                        IsOwnerOrReadOnly]
+                          IsOwnerOrReadOnly]
 
     def get(self, request, format=None):
         orders = Order.objects.all()
@@ -41,7 +41,7 @@ class OrderDetail(APIView):
     """
 
     permission_classes = [permissions.IsAuthenticatedOrReadOnly,
-                        IsOwnerOrReadOnly]
+                          IsOwnerOrReadOnly]
 
     def get_object(self, pk):
         try:
@@ -68,12 +68,10 @@ class OrderDetail(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-class UserList(generics.ListAPIView):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
-
-
-class UserDetail(generics.RetrieveAPIView):
+class UserViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    This viewset automatically provides `list` and `detail` actions.
+    """
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
