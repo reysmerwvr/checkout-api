@@ -11,6 +11,7 @@ class Order(models.Model):
 	"""
 	client = models.ForeignKey(
 		settings.AUTH_USER_MODEL,
+		related_name='orders',
 		on_delete=models.CASCADE
 	)
 	direction = models.TextField()

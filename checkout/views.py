@@ -19,15 +19,15 @@ class OrderList(APIView):
     """
 
     permission_classes = [permissions.IsAuthenticatedOrReadOnly,
-                          IsOwnerOrReadOnly]
+                        IsOwnerOrReadOnly]
 
     def get(self, request, format=None):
         orders = Order.objects.all()
-        serializer = OrderSerializer(orders, many=True)
+        serializer = OrderSerializer(orders, many=True, context={'request': request})
         return Response(serializer.data)
 
     def post(self, request, format=None):
-        request.data.client = self.request.user
+        request.data['client'] = self.request.user.id
         serializer = OrderSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -41,7 +41,7 @@ class OrderDetail(APIView):
     """
 
     permission_classes = [permissions.IsAuthenticatedOrReadOnly,
-                          IsOwnerOrReadOnly]
+                        IsOwnerOrReadOnly]
 
     def get_object(self, pk):
         try:
@@ -51,7 +51,7 @@ class OrderDetail(APIView):
 
     def get(self, request, pk, format=None):
         order = self.get_object(pk)
-        serializer = OrderSerializer(order)
+        serializer = OrderSerializer(order, context={'request': request})
         return Response(serializer.data)
 
     def put(self, request, pk, format=None):
@@ -74,6 +74,11 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
     """
     queryset = User.objects.all()
     serializer_class = UserSerializer
+
+    def get_serializer_context(self):
+        context = super(UserViewSet, self).get_serializer_context()
+        context.update({'request': self.request})
+        return context
 
 
 @api_view(['GET'])
