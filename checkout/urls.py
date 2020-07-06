@@ -13,9 +13,9 @@ user_detail = UserViewSet.as_view({
 urlpatterns = [
     path('', checkout_api),
     path('orders', OrderList.as_view(), name='order-list'),
-    path('orders/<int:pk>/', OrderDetail.as_view(), name='order-detail'),
+    path('orders/<int:pk>', OrderDetail.as_view(), name='order-detail'),
     path('users', user_list, name='user-list'),
-    path('users/<int:pk>/', user_detail, name='user-detail'),
+    path('users/<int:pk>', user_detail, name='user-detail'),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)

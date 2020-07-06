@@ -1,7 +1,5 @@
 import json
 from datetime import datetime
-
-
 from rest_framework import serializers
 from django.conf import settings
 from checkout.models import Order
@@ -25,6 +23,18 @@ class OrderSerializer(serializers.HyperlinkedModelSerializer):
         view_name='user-detail'
     )
 
+    def to_representation(self, value):
+        """Convert `products` to json."""
+        ret = super().to_representation(value)
+        ret['products'] = json.loads(ret['products'])
+        return ret
+
+    def to_internal_value(self, data):
+        """Convert `products` to string."""
+        if 'products' in data:
+            data['products'] = json.dumps(data['products'])
+        return super().to_internal_value(data)
+
     def create(self, validated_data):
         """
         Create and return a new `Order` instance, given the validated data.
@@ -38,16 +48,10 @@ class OrderSerializer(serializers.HyperlinkedModelSerializer):
         instance.direction = validated_data.get(
             'direction', instance.direction)
         instance.products = validated_data.get('products', instance.products)
-        instance.updated_at = validated_data.get(
-            'updated_at', instance.updated_at)
+        instance.updated = validated_data.get(
+            'updated', datetime.now())
         instance.save()
         return instance
-
-    def to_representation(self, instance):
-        """Convert `products` to json."""
-        ret = super().to_representation(instance)
-        ret['products'] = ret['products']
-        return ret
 
     class Meta:
         model = Order

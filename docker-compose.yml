@@ -1,0 +1,49 @@
+version: '3'
+
+networks:
+  frontend:
+    driver: ${NETWORKS_DRIVER}
+  backend:
+    driver: ${NETWORKS_DRIVER}
+
+services:
+
+  ### AdidasNodeJsChallenge API ##############################################
+  application:
+    build:
+      context: .
+      dockerfile: ${DOCKER_FILE}
+    restart: always
+    ports:
+      - "${PORT}:8000"
+    volumes:
+      - .:${APP_CODE_PATH_CONTAINER}
+    environment:
+      - DB_USER=${DB_USER}
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_SCHEMA=${DB_SCHEMA}
+    depends_on:
+      - mysql
+    networks:
+      - frontend
+      - backend
+  
+  ### MySQL ##############################################
+  mysql:
+    image: 'mysql:latest'
+    restart: always
+    environment:
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - TZ=${MYSQL_TIMEZONE}
+    ports:
+      - "${DB_PORT}:3306"
+    volumes:
+      - ${DATA_PATH_HOST}/mysql:/var/lib/mysql
+      - ${MYSQL_ENTRYPOINT_INITDB}:/docker-entrypoint-initdb.d
+    networks:
+      - backend

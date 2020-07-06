@@ -7,7 +7,7 @@ from django.utils import timezone
 # Create your models here.
 
 class Order(models.Model):
-	"""Data model of an Order
+	"""Order Data model
 	"""
 	client = models.ForeignKey(
 		settings.AUTH_USER_MODEL,
@@ -21,7 +21,7 @@ class Order(models.Model):
 	deleted = models.DateTimeField(auto_now_add=False, null=True)
 
 	def __str__(self):
-		return self.direction
+		return self.id
 
 	def was_ordered_recently(self):
 		now = timezone.now()
