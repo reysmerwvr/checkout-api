@@ -20,16 +20,36 @@ checkout-api uses a number of open source projects to work properly:
 - [pipenv] - Pipenv: Python Development Workflow for Humans
 - [mysql-client] - mysqlclient
 
-## Running playgrounds
+## Running it without Docker
 
 ```sh
 cd checkout-api
+cp .env.example .env # If you don't have .env file you can use the example one. Just rename .env.example to .env. Enter your configuration here.
 pipenv install
 pipenv shell
 pipenv run python3 manage.py migrate # Run migrations
+pipenv run python3 manage.py createsuperuser --email admin@example.com --username admin
 pipenv run python3 manage.py runserver 8000
-pipenv run python3 manage.py test checkout
 ```
+
+## Running it with Docker
+
+```sh
+cd checkout-api
+cp .env.example .env # If you don't have .env file you can use the example one. Just rename .env.example to .env. Enter your configuration here.
+docker-compose build
+docker-compose up -d
+```
+
+## Postman Collection
+
+This collection contains API Docs
+
+[Postman Collection](https://www.getpostman.com/collections/5a6d44f684d5c13e81b2)
+
+## Postman Environment
+
+Import checkout-api/Checkout.postman_environment.json into your postman environments
 
 ## Meta
 
