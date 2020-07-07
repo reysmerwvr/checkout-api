@@ -1,5 +1,3 @@
-import json
-import environ
 from checkout.models import Order
 from bill.models import Invoice
 from checkout.serializers import OrderSerializer
@@ -18,11 +16,6 @@ from rest_framework.reverse import reverse
 from rest_framework import status
 from rest_framework import permissions
 from rest_framework import viewsets
-
-env = environ.Env(
-    TAX_RATE=(int, 10),
-    VAT_RATE=(int, 15),
-)
 
 
 class OrderList(APIView):
@@ -45,7 +38,8 @@ class OrderList(APIView):
         if serializer.is_valid():
             order = serializer.save(client=request.user)
             request.order = order
-            create_invoice(request)
+            invoice_list = InvoiceList()
+            invoice_list.post(request)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -59,7 +53,13 @@ class OrderDetail(APIView):
 
     def get_object(self, pk):
         try:
-            return Order.objects.get(pk=pk)
+            return Order.objects.filter(deleted__isnull=True).get(pk=pk)
+        except Order.DoesNotExist:
+            raise Http404
+
+    def get_invoice(self, order):
+        try:
+            return Invoice.objects.filter(deleted__isnull=True).get(order=order)
         except Order.DoesNotExist:
             raise Http404
 
@@ -75,7 +75,9 @@ class OrderDetail(APIView):
         if serializer.is_valid():
             order = serializer.save(client=request.user)
             request.order = order
-            create_invoice(request)
+            invoice = self.get_invoice(order)
+            invoice_detail = InvoiceDetail()
+            invoice_detail.patch(request, pk=invoice.id)
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -108,25 +110,3 @@ def checkout_api(request, format=None):
     })
 
 
-def create_invoice(request, format=None):
-    """
-    This method creates an invoice object.
-    """
-    products = json.loads(request.order.products)
-    total = reduce((lambda prod_a, prod_b: (float(
-        prod_a['cost']) * prod_a['quantity']) + (float(prod_b['cost']) * prod_b['quantity'])), products)
-    total = float("{:.2f}".format(total))
-    sub_total = total
-    taxes = float("{:.2f}".format(sub_total * float(env('TAX_RATE') / 100)))
-    vat = float("{:.2f}".format(sub_total * float(env('VAT_RATE') / 100)))
-    request.data['sub_total'] = sub_total
-    request.data['taxes'] = taxes
-    request.data['vat'] = vat
-    request.data['total'] = total + taxes + vat
-    if request.method == 'POST':
-        invoice_list = InvoiceList()
-        invoice_list.post(request)
-    elif request.method == 'PATCH':
-        invoice = Invoice.objects.get(order=request.order)
-        invoice_detail = InvoiceDetail()
-        invoice_detail.patch(request, pk=invoice.id)
