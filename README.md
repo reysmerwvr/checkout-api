@@ -27,9 +27,9 @@ cd checkout-api
 cp .env.example .env # If you don't have .env file you can use the example one. Just rename .env.example to .env. Enter your configuration here.
 pipenv install
 pipenv shell
-pipenv run python3 manage.py migrate # Run migrations
-pipenv run python3 manage.py createsuperuser --email admin@example.com --username admin
-pipenv run python3 manage.py runserver 8000
+pipenv run python manage.py migrate # Run migrations
+pipenv run python manage.py createsuperuser --email admin@example.com --username admin
+pipenv run python manage.py runserver 8000
 ```
 
 ## Running it with Docker
@@ -38,7 +38,8 @@ pipenv run python3 manage.py runserver 8000
 cd checkout-api
 cp .env.example .env # If you don't have .env file you can use the example one. Just rename .env.example to .env. Enter your configuration here.
 docker-compose build
-docker-compose up -d
+docker-compose -f docker-compose.yml up -d
+docker-compose down -v # Bring down the development containers (and the associated volumes with the -v flag)
 ```
 
 ## Postman Collection

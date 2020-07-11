@@ -19,7 +19,8 @@ env = environ.Env(
     DB_PORT=(str, '3306'),
     DB_USER=(str, 'checkout_dev'),
     DB_PASSWORD=(str, 'checkout_dev'),
-    DB_SCHEMA=(str, 'checkout_dev')
+    DB_SCHEMA=(str, 'checkout_dev'),
+    ALLOWED_HOSTS=(str, 'localhost 127.0.0.1 [::1]'),
 )
 environ.Env.read_env()
 
@@ -38,7 +39,9 @@ DEBUG = env('DEBUG')
 
 # AUTH_USER_MODEL = 'checkout.User'
 
-ALLOWED_HOSTS = []
+# 'DJANGO_AALLOWED_HOSTSLLOWED_HOSTS' should be a single string of hosts with a space between each.
+# For example: 'ALLOWED_HOSTS=localhost 127.0.0.1 [::1]'
+ALLOWED_HOSTS = env('ALLOWED_HOSTS').split(" ")
 
 
 # Application definition

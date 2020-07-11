@@ -1,4 +1,4 @@
-version: '3'
+version: '3.7'
 
 networks:
   frontend:
@@ -8,22 +8,19 @@ networks:
 
 services:
 
-  ### AdidasNodeJsChallenge API ##############################################
+  ### Checkout API ##############################################
   application:
     build:
       context: .
       dockerfile: ${DOCKER_FILE}
+    command: pipenv run python manage.py runserver 0.0.0.0:8000
     restart: always
     ports:
       - "${PORT}:8000"
     volumes:
       - .:${APP_CODE_PATH_CONTAINER}
-    environment:
-      - DB_USER=${DB_USER}
-      - DB_HOST=${DB_HOST}
-      - DB_PORT=${DB_PORT}
-      - DB_PASSWORD=${DB_PASSWORD}
-      - DB_SCHEMA=${DB_SCHEMA}
+    env_file:
+      - ./.env
     depends_on:
       - mysql
     networks:
